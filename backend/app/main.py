@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import errors, uploads
 from app.api import VERSION, router
@@ -18,5 +19,11 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="Patent Inference API", version=VERSION, lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[origin.strip() for origin in get_settings().cors_origins.split(",") if origin.strip()],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 errors.install(app)
 app.include_router(router)

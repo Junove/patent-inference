@@ -1,0 +1,24 @@
+<section id="proof-search" data-section="Three live proof points: search, lint, and Near AI generation" data-transition="fade" style="background:#F7F5F0;color:#1D2A35;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:64px;font-weight:600">Search: keyword retrieval over a seeded 100k-patent corpus</h2>
+<div style="display:flex;gap:32px;flex:1">
+<div style="flex:1;background:#1D2A35;border-radius:20px;padding:40px;display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'IBM Plex Sans', Arial, sans-serif;font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#C97A3D">Request</p>
+<p style="font-family:'JetBrains Mono','Courier New',monospace;font-size:34px;color:#F7F5F0">GET /api/v1/patents/search</p>
+<p style="font-family:'JetBrains Mono','Courier New',monospace;font-size:30px;color:#C9D3D7">?q=adaptive+filtering</p>
+<p style="font-family:'JetBrains Mono','Courier New',monospace;font-size:30px;color:#C9D3D7">&amp;date_from=2022-01-01</p>
+<div style="flex:1"></div>
+<p style="font-family:'IBM Plex Sans', Arial, sans-serif;font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#C97A3D">Response</p>
+<p style="font-family:'JetBrains Mono','Courier New',monospace;font-size:34px;color:#F7F5F0">200 OK · 428 results, ranked</p>
+</div>
+<div style="flex:1;background:#FFFDF8;border:1px solid #DDD6C7;border-radius:20px;padding:40px;display:flex;flex-direction:column;justify-content:center">
+<table style="font-family:'IBM Plex Sans', Arial, sans-serif;font-size:30px;color:#1D2A35">
+<tr><th style="width:60%;text-align:left;color:#4A5568;font-weight:600">Title</th><th style="width:15%;text-align:left;color:#4A5568;font-weight:600">Score</th><th style="width:25%;text-align:left;color:#4A5568;font-weight:600">Assignee</th></tr>
+<tr><td>Adaptive Noise Filtering for Wearable Sensors</td><td>0.93</td><td>Helio Devices</td></tr>
+<tr><td>Context-Aware Audio Filtering Method</td><td>0.88</td><td>Northfield Labs</td></tr>
+<tr><td>Self-Tuning Filter Array System</td><td>0.81</td><td>Orenda Systems</td></tr>
+</table>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6a7179">Illustrative results from the seeded demo corpus — not real patent records. Target: 500ms at p95 on 100k patents.</p>
+<aside>This runs today against the committed search API, backed by SQLite FTS5 over a seeded corpus. The results on screen are made up for this slide; the live call against the running backend returns real seeded records.</aside>
+</section>

@@ -1,0 +1,40 @@
+<section id="architecture" data-transition="fade" style="display:flex; flex-direction:column; padding:128px 128px 160px; background:#f7f5f0">
+  <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:64px; font-weight:600; color:#1d2a35">One contract, two codebases, one model provider</h2>
+  <div style="position:absolute; top:300px; left:128px; width:420px; height:180px; display:flex; flex-direction:column; gap:10px; justify-content:center; padding:24px 20px; background:#fffdf8; border:1px solid #ddd6c7; border-radius:16px">
+    <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+      <x-icon name="Code" style="width:28px; height:28px; color:#3f6659"></x-icon>
+      <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; font-weight:600; color:#1d2a35">Frontend</h3>
+    </div>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#4a5568">Search, linter and generation screens</p>
+  </div>
+  <div style="position:absolute; top:300px; left:710px; width:420px; height:180px; display:flex; flex-direction:column; gap:10px; justify-content:center; padding:24px 20px; background:#fffdf8; border:1px solid #ddd6c7; border-radius:16px">
+    <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+      <x-icon name="Settings" style="width:28px; height:28px; color:#3f6659"></x-icon>
+      <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; font-weight:600; color:#1d2a35">Backend</h3>
+    </div>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#4a5568">Runs search, linting and generation</p>
+  </div>
+  <div style="position:absolute; top:300px; left:1292px; width:420px; height:180px; display:flex; flex-direction:column; gap:10px; justify-content:center; padding:24px 20px; background:#fffdf8; border:1px solid #ddd6c7; border-radius:16px">
+    <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+      <x-icon name="Cloud" style="width:28px; height:28px; color:#c97a3d"></x-icon>
+      <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; font-weight:600; color:#1d2a35">AI Inference</h3>
+    </div>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#4a5568">Hosted model calls, streamed back</p>
+  </div>
+  <div style="position:absolute; top:620px; left:710px; width:200px; height:110px; display:flex; flex-direction:column; gap:6px; justify-content:center; padding:16px; background:#fffdf8; border:1px solid #ddd6c7; border-radius:14px">
+    <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; color:#1d2a35">Database</h3>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#4a5568">Patent records</p>
+  </div>
+  <div style="position:absolute; top:620px; left:930px; width:200px; height:110px; display:flex; flex-direction:column; gap:6px; justify-content:center; padding:16px; background:#fffdf8; border:1px solid #ddd6c7; border-radius:14px">
+    <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; color:#1d2a35">Local storage</h3>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#4a5568">Uploads, outputs</p>
+  </div>
+  <x-connector x1="548" y1="390" x2="710" y2="390" style="color:#3f6659; border-width:3px"></x-connector>
+  <x-connector x1="1130" y1="390" x2="1292" y2="390" style="color:#c97a3d; border-width:3px"></x-connector>
+  <x-connector x1="850" y1="480" x2="810" y2="620" route="vh" style="color:#3f6659; border-width:3px"></x-connector>
+  <x-connector x1="990" y1="480" x2="1030" y2="620" route="vh" style="color:#3f6659; border-width:3px"></x-connector>
+  <p style="position:absolute; top:338px; left:560px; width:150px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#4a5568">REST</p>
+  <p style="position:absolute; top:338px; left:1140px; width:150px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#4a5568">HTTPS</p>
+  <p style="position:absolute; bottom:64px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6a7179">A single shared REST contract is the only coupling between the frontend and the backend.</p>
+  <aside>The frontend is a thin client: it never touches Near AI, the database, or disk directly. Everything goes through the backend's REST contract, which is the only thing the two of us had to agree on up front.</aside>
+</section>

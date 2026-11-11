@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import App from './App.tsx'
@@ -15,21 +16,20 @@ function renderApp(initialPath: string) {
 }
 
 describe('App routing', () => {
-  it('renders the about page at /about', () => {
-    renderApp('/about')
-
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'About Near Private AI' }),
-    ).toBeInTheDocument()
-    expect(screen.getAllByText('Near Private AI').length).toBeGreaterThan(0)
+  it('redirects the index route to the search workspace', async () => {
+    renderApp('/')
+    expect(await screen.findByRole('heading', { level: 1, name: 'Patent search' })).toBeInTheDocument()
   })
 
-  it('renders the home page with the patent prompt', () => {
-    renderApp('/')
+  it('navigates to the settings page from the sidebar', async () => {
+    renderApp('/search')
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('link', { name: 'Settings' }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'Settings' })).toBeInTheDocument()
+  })
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Ask about patents' }),
-    ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Learn more' })).toBeInTheDocument()
+  it('shows the connection status chip', async () => {
+    renderApp('/search')
+    expect(await screen.findByTestId('connection-chip')).toBeInTheDocument()
   })
 })

@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -27,3 +29,12 @@ def install(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def _validation(_: Request, e: RequestValidationError):
         return _body(422, "validation_error", "; ".join(f"{'.'.join(map(str, x['loc']))}: {x['msg']}" for x in e.errors()))
+
+    @app.exception_handler(Exception)
+    async def _unhandled(_: Request, e: Exception):
+        # Without this, an unexpected exception bypasses CORSMiddleware (Starlette's
+        # ServerErrorMiddleware sits outside it), so the browser reports a bare network
+        # error instead of a response the frontend can show the user. Logged explicitly
+        # since registering this handler stops Starlette's own traceback logging.
+        logging.exception("Unhandled exception")
+        return _body(500, "internal_error", "Internal server error")
