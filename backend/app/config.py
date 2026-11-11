@@ -10,6 +10,14 @@ class Settings(BaseSettings):
 
     near_ai_api_key: str = ""
     near_ai_model: str = ""
+    # shortcut: NEAR_AI_BASE_URL and the DeepSeek $/1k-token price are placeholders until the real
+    # Near AI Cloud endpoint and pricing are confirmed (docs/REQUIREMENTS.md open question); override via env.
+    near_ai_base_url: str = "https://cloud-api.near.ai/v1"
+    near_ai_max_tokens: int = 1200
+    near_ai_retry_backoff_seconds: float = 1.0
+    near_ai_job_token_cap: int = 20_000  # NFR-12 per-job cap
+    near_ai_total_budget_usd: float = 20.0  # NFR-12 total spend limit
+    near_ai_price_per_1k_tokens: float = 0.002
     database_url: str = "sqlite:///./patent.db"
     upload_dir: str = "./uploads"
     upload_max_bytes: int = 25 * 1024 * 1024  # FR-U1 per-file limit
