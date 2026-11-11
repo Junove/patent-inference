@@ -1,0 +1,11 @@
+# Data-driven linter config (FR-L6): add/reorder sections or change the
+# abstract cap here without touching engine.py.
+sections:
+  - Title
+  - Abstract
+  - Background
+  - Summary
+  - Drawings Description
+  - Detailed Description
+  - Claims
+abstract_max_words: 150

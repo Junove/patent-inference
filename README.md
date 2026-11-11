@@ -37,6 +37,18 @@ uv run uvicorn app.main:app --reload
 
 `uv run` creates and updates `.venv` automatically from `pyproject.toml`/`uv.lock`; no manual venv activation needed.
 
+Seed the patent search database (dev-sized corpus; `--scale N` also adds N synthetic patents for perf testing):
+
+```bash
+uv run python -m app.search.seed
+```
+
+Run the patent search MCP server standalone:
+
+```bash
+uv run python -m app.search.mcp_server
+```
+
 Frontend (from `frontend/`):
 
 ```bash
