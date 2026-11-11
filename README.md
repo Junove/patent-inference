@@ -13,20 +13,24 @@ Full requirements: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
 ## Repository layout
 
 ```
-backend/     Python (FastAPI, SQLAlchemy, Alembic, pytest)       owner: Collaborator A
-frontend/    Vite + React + TypeScript, Vitest                   owner: Collaborator B
-contract/    openapi.yaml, the API contract both sides share
-docs/        Requirements and design notes
-.github/     CI workflows
+backend/          Python (FastAPI, SQLAlchemy, Alembic, pytest)       owner: Collaborator A
+frontend/         Vite + React + TypeScript, Vitest                   owner: Collaborator B
+packages/shared/  Shared TypeScript utilities (npm workspace)
+packages/contracts/ API contract constants and types (npm workspace)
+contract/         openapi.yaml, the API contract both sides share
+docs/             Requirements and design notes
+.github/          CI workflows
 ```
 
-`backend/` and `frontend/` do not exist yet; they are scaffolded in phase 1 (see the issues).
+`backend/` does not exist yet; it is scaffolded in phase 1 (see the issues). The
+frontend is an npm-workspaces root with `frontend`, `packages/shared` and
+`packages/contracts` as workspaces.
 
 ## Setup
 
 Requirements: [uv](https://docs.astral.sh/uv/) (manages Python 3.11+ for the backend) and Node 20+.
 
-Backend (from `backend/`):
+Backend (from `backend/`, once scaffolded):
 
 ```bash
 cp ../.env.example .env   # add the Near AI Cloud key; never commit .env
@@ -49,14 +53,20 @@ Run the patent search MCP server standalone:
 uv run python -m app.search.mcp_server
 ```
 
-Frontend (from `frontend/`):
+Frontend (from the repository root):
 
 ```bash
-npm ci
-npm test
+npm run setup   # one command: npm ci, installs every workspace from package-lock.json
+npm test        # runs vitest run in each workspace
 ```
 
-CI expects these conventions: `backend/pyproject.toml` has a `dev` dependency group with pytest, and `frontend/package.json` has a `test` script that runs `vitest run`.
+`npm run dev` starts the Vite dev server. Regenerate the typed API client after
+changing `contract/openapi.yaml` with `npm run generate:api`.
+
+CI runs `npm ci` followed by `npm test` from the repository root for the
+frontend, and `uv run pytest` from `backend/`. The backend's
+`backend/pyproject.toml` has a `dev` dependency group with pytest, and the root
+`npm test` runs `vitest run` in each workspace.
 
 ## Secrets
 
