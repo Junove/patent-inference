@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     upload_dir: str = "./uploads"
     upload_max_bytes: int = 25 * 1024 * 1024  # FR-U1 per-file limit
     upload_retention_days: int = 30  # NFR-11
+    cors_origins: str = "http://localhost:5173"  # comma-separated; the Vite dev server's origin
 
 
 @lru_cache

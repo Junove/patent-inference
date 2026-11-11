@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:mock": "vite --mode mock",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -36,9 +37,15 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
     "jsdom": "^27.4.0",
+    "msw": "^2.15.0",
     "openapi-typescript": "^7.13.0",
     "typescript": "~5.9.3",
     "vite": "^8.3.8",
     "vitest": "^4.1.12"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
