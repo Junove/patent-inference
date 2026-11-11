@@ -21,7 +21,7 @@ def test_projects_roundtrip(client):
 def test_error_shape(client):
     bad = client.post("/api/v1/projects", json={})
     assert bad.status_code == 422 and set(bad.json()) == {"code", "message"}
-    stub = client.get("/api/v1/patents/search", params={"q": "x"})
+    stub = client.post("/api/v1/projects/p1/generate", json={})
     assert stub.status_code == 501 and stub.json()["code"] == "not_implemented"
     assert client.get("/api/v1/nope").json()["code"] == "http_error"
 

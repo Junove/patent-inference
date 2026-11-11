@@ -6,7 +6,11 @@ from sqlalchemy.orm import Session
 from app import schemas
 from app.db import get_db
 from app.errors import ApiError
+from app.linter import engine as linter_engine
+from app.linter.parser import extract_lines
 from app.models import Project
+from app.search.deps import get_patent_repository
+from app.search.repository import PatentRepository
 
 VERSION = "0.1.0"
 router = APIRouter(prefix="/api/v1", responses={"default": {"model": schemas.Error}})
@@ -34,23 +38,34 @@ def list_projects(db: Session = Depends(get_db)):
     return db.scalars(select(Project).order_by(Project.created_at)).all()
 
 
-# --- contract stubs: implemented in later phases, present now so the OpenAPI draft is complete ---
 @router.get("/patents/search", response_model=schemas.SearchResults)
-def search_patents(q: str, page: int = Query(1, ge=1), date_from: str | None = None, date_to: str | None = None,
-                   assignee: str | None = None, inventor: str | None = None, classification: str | None = None):
-    _todo("Patent search")
+def search_patents(q: str = "", page: int = Query(1, ge=1), date_from: str | None = None, date_to: str | None = None,
+                    assignee: str | None = None, inventor: str | None = None, classification: str | None = None,
+                    repo: PatentRepository = Depends(get_patent_repository)):
+    results, total = repo.search(q, page=page, date_from=date_from, date_to=date_to, assignee=assignee,
+                                  inventor=inventor, classification=classification)
+    return {"results": results, "total": total}
 
 
 @router.get("/patents/{patent_id}", response_model=schemas.PatentDetail)
-def get_patent(patent_id: str):
-    _todo("Patent detail")
+def get_patent(patent_id: str, repo: PatentRepository = Depends(get_patent_repository)):
+    detail = repo.get(patent_id)
+    if detail is None:
+        raise ApiError(404, "not_found", f"No patent {patent_id}")
+    return detail
 
 
 @router.post("/lint", response_model=list[schemas.Finding])
-def lint(file: UploadFile):
-    _todo("Linting")
+async def lint(file: UploadFile):
+    data = await file.read()
+    try:
+        lines = extract_lines(file.filename or "", data)
+    except Exception as e:
+        return [schemas.Finding(severity="error", rule="unreadable", message=f"Could not read {file.filename}: {e}")]
+    return linter_engine.lint(lines)
 
 
+# --- contract stubs: implemented in later phases ---
 @router.post("/projects/{project_id}/files", response_model=schemas.FileOut, status_code=201)
 def upload_file(project_id: str, file: UploadFile):
     _todo("File upload")
