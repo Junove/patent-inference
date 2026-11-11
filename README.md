@@ -24,15 +24,18 @@ docs/        Requirements and design notes
 
 ## Setup
 
-Requirements: Python 3.11+ and Node 20+.
+Requirements: [uv](https://docs.astral.sh/uv/) (manages Python 3.11+ for the backend) and Node 20+.
 
 Backend (from `backend/`):
 
 ```bash
-pip install -r requirements.txt
 cp ../.env.example .env   # add the Near AI Cloud key; never commit .env
-pytest
+uv run alembic upgrade head
+uv run pytest
+uv run uvicorn app.main:app --reload
 ```
+
+`uv run` creates and updates `.venv` automatically from `pyproject.toml`/`uv.lock`; no manual venv activation needed.
 
 Frontend (from `frontend/`):
 
@@ -41,7 +44,7 @@ npm ci
 npm test
 ```
 
-CI expects these conventions: `backend/requirements.txt` includes pytest, and `frontend/package.json` has a `test` script that runs `vitest run`.
+CI expects these conventions: `backend/pyproject.toml` has a `dev` dependency group with pytest, and `frontend/package.json` has a `test` script that runs `vitest run`.
 
 ## Secrets
 
