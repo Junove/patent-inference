@@ -26,7 +26,13 @@ export const patents: Patent[] = [
     claims: ['A method comprising maintaining a sliding token window at each of a plurality of nodes.'],
     inventors: ['R. Okafor'],
     classification: ['H04L 47/10'],
-    cited_patents: [{ id: 'US-0001', title: 'Battery pack thermal regulation via phase-change layers', abstract: 'A battery pack with interleaved phase-change material layers.' }],
+    cited_patents: [
+      {
+        id: 'US-0001',
+        title: 'Battery pack thermal regulation via phase-change layers',
+        abstract: 'A battery pack with interleaved phase-change material layers.',
+      },
+    ],
   },
   {
     id: 'US-0003',
@@ -41,7 +47,7 @@ export const patents: Patent[] = [
   },
 ]
 
-export const projects: Project[] = [
+const initialProjects: Project[] = [
   {
     id: 'proj-1',
     name: 'Phase-change battery pack',
@@ -50,12 +56,31 @@ export const projects: Project[] = [
   },
 ]
 
+export const projects: Project[] = [...initialProjects]
 export const filesByProject = new Map<string, FileOut[]>([['proj-1', []]])
-
-export const jobs = new Map<string, { status: JobStatusValue; project_id: string }>()
+export const jobs = new Map<string, { status: JobStatusValue; project_id: string; sections: string[] }>()
+// Mirrors the real backend's next_version(): max version so far for a project, plus one.
+export const documentVersions = new Map<string, number>()
 
 let nextId = 100
 export function newId(prefix: string): string {
   nextId += 1
   return `${prefix}-${nextId}`
+}
+
+export function nextDocumentVersion(projectId: string): number {
+  const version = (documentVersions.get(projectId) ?? 0) + 1
+  documentVersions.set(projectId, version)
+  return version
+}
+
+/** Restores the mock store to its initial fixture state; call between test cases. */
+export function resetMockData() {
+  projects.length = 0
+  projects.push(...initialProjects.map((p) => ({ ...p })))
+  filesByProject.clear()
+  filesByProject.set('proj-1', [])
+  jobs.clear()
+  documentVersions.clear()
+  nextId = 100
 }

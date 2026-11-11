@@ -1,12 +1,16 @@
 import { http, HttpResponse } from 'msw'
-import { API_BASE_URL } from '../api/client'
-import { filesByProject, jobs, newId, patents, projects } from './data'
+import { filesByProject, jobs, newId, nextDocumentVersion, patents, projects } from './data'
 import type { components } from '../api/schema'
 
 type Finding = components['schemas']['Finding']
 type ApiError = components['schemas']['Error']
 
-const api = (path: string) => `${API_BASE_URL}/api/v1${path}`
+const SECTION_NAMES = ['title', 'abstract', 'background', 'summary', 'claims']
+
+// Wildcard origin: matches regardless of the configured backend URL (and, importantly,
+// avoids importing api/client.ts here — that would create apiClient's fetch client, which
+// captures `fetch` as a default param, before MSW gets a chance to patch it in tests).
+const api = (path: string) => `*/api/v1${path}`
 
 function notFound(message: string) {
   return HttpResponse.json<ApiError>({ code: 'not_found', message }, { status: 404 })
@@ -105,13 +109,17 @@ export const handlers = [
 
   http.post(api('/projects/:projectId/generate'), ({ params }) => {
     const jobId = newId('job')
-    jobs.set(jobId, { status: 'queued', project_id: params.projectId as string })
+    jobs.set(jobId, { status: 'queued', project_id: params.projectId as string, sections: [...SECTION_NAMES] })
     return HttpResponse.json({ job_id: jobId }, { status: 202 })
   }),
 
   http.post(api('/projects/:projectId/sections/:name/regenerate'), ({ params }) => {
     const jobId = newId('job')
-    jobs.set(jobId, { status: 'queued', project_id: params.projectId as string })
+    jobs.set(jobId, {
+      status: 'queued',
+      project_id: params.projectId as string,
+      sections: [params.name as string],
+    })
     return HttpResponse.json({ job_id: jobId }, { status: 202 })
   }),
 
@@ -122,27 +130,36 @@ export const handlers = [
     return HttpResponse.json({ job_id: params.jobId, status: job.status })
   }),
 
-  // Mocks the SSE stream the real backend serves while a generation job runs.
+  // Mocks the SSE stream the real backend serves while a generation job runs, matching
+  // app/generator/runner.py's `_sse` format exactly: a named `event:` line (status/section/
+  // token) plus `data:`, with section text arriving as per-section token deltas rather than
+  // on the `section` event itself.
   http.get(api('/jobs/:jobId/events'), ({ params }) => {
     const jobId = params.jobId as string
     const job = jobs.get(jobId)
     if (!job) return notFound(`Job ${jobId} not found`)
 
     const encoder = new TextEncoder()
-    const send = (controller: ReadableStreamDefaultController<Uint8Array>, event: Record<string, unknown>) =>
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
-    const sections = ['title', 'abstract', 'background', 'summary', 'claims']
+    const send = (controller: ReadableStreamDefaultController<Uint8Array>, event: string, data: Record<string, unknown>) =>
+      controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         job.status = 'running'
-        send(controller, { type: 'status', status: 'running' })
-        for (const name of sections) {
-          await new Promise((resolve) => setTimeout(resolve, 300))
-          send(controller, { type: 'section', name, content: `Mock draft text for "${name}".` })
+        send(controller, 'status', { job_id: jobId, status: 'running' })
+
+        for (const name of job.sections) {
+          send(controller, 'section', { name, status: 'running' })
+          for (const word of `Mock draft text for "${name}".`.split(' ')) {
+            await new Promise((resolve) => setTimeout(resolve, 60))
+            send(controller, 'token', { name, delta: `${word} ` })
+          }
+          send(controller, 'section', { name, status: 'done' })
         }
+
         job.status = 'succeeded'
-        send(controller, { type: 'status', status: 'succeeded' })
+        const version = nextDocumentVersion(job.project_id)
+        send(controller, 'status', { job_id: jobId, status: 'succeeded', version })
         controller.close()
       },
     })

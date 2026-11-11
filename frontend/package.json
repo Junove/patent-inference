@@ -23,6 +23,7 @@
     "@near-private-ai/contracts": "*",
     "@near-private-ai/shared": "*",
     "@tanstack/react-query": "^5.107.1",
+    "mammoth": "^1.13.0",
     "openapi-fetch": "^0.17.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

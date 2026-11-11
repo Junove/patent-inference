@@ -1,0 +1,17 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-11-11T19:00:00Z"},
+  "lists": "css",
+  "title": "Patent Inference — Hackathon Pitch",
+  "order": ["cover", "problem", "architecture", "api-docs", "proof-search", "proof-linter", "proof-genai", "closing"],
+  "sections": {
+    "intro": {"description": "The problem and the architecture", "start": "cover"},
+    "proof": {"description": "One live API, shown through search, linting, and generation", "start": "api-docs"}
+  },
+  "faces": {
+    "source-serif-4": {"family": "Source Serif 4", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400..700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap"},
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400..700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap"},
+    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400..700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}
