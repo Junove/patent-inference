@@ -13,20 +13,24 @@ Full requirements: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
 ## Repository layout
 
 ```
-backend/     Python (FastAPI, SQLAlchemy, Alembic, pytest)       owner: Collaborator A
-frontend/    Vite + React + TypeScript, Vitest                   owner: Collaborator B
-contract/    openapi.yaml, the API contract both sides share
-docs/        Requirements and design notes
-.github/     CI workflows
+backend/          Python (FastAPI, SQLAlchemy, Alembic, pytest)       owner: Collaborator A
+frontend/         Vite + React + TypeScript, Vitest                   owner: Collaborator B
+packages/shared/  Shared TypeScript utilities (npm workspace)
+packages/contracts/ API contract constants and types (npm workspace)
+contract/         openapi.yaml, the API contract both sides share
+docs/             Requirements and design notes
+.github/          CI workflows
 ```
 
-`backend/` and `frontend/` do not exist yet; they are scaffolded in phase 1 (see the issues).
+`backend/` does not exist yet; it is scaffolded in phase 1 (see the issues). The
+frontend is an npm-workspaces root with `frontend`, `packages/shared` and
+`packages/contracts` as workspaces.
 
 ## Setup
 
 Requirements: Python 3.11+ and Node 20+.
 
-Backend (from `backend/`):
+Backend (from `backend/`, once scaffolded):
 
 ```bash
 pip install -r requirements.txt
@@ -34,14 +38,18 @@ cp ../.env.example .env   # add the Near AI Cloud key; never commit .env
 pytest
 ```
 
-Frontend (from `frontend/`):
+Frontend (from the repository root):
 
 ```bash
-npm ci
-npm test
+npm run setup   # one command: npm ci, installs every workspace from package-lock.json
+npm test        # runs vitest run in each workspace
 ```
 
-CI expects these conventions: `backend/requirements.txt` includes pytest, and `frontend/package.json` has a `test` script that runs `vitest run`.
+`npm run dev` starts the Vite dev server. Regenerate the typed API client after
+changing `contract/openapi.yaml` with `npm run generate:api`.
+
+CI runs `npm ci` followed by `npm test` from the repository root, and expects
+`backend/requirements.txt` to include pytest.
 
 ## Secrets
 

@@ -1,8 +1,12 @@
 .env
+.env.local
 *.db
 uploads/
 __pycache__/
 .venv/
 node_modules/
 dist/
+coverage/
+*.tsbuildinfo
+.vite/
 .DS_Store

@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: Near Private AI API
+  version: 0.1.0
+  description: Minimal API contract used to generate the frontend API client.
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Service health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /patents:
+    post:
+      operationId: submitPatentQuery
+      summary: Submit a patent question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatentQuery'
+      responses:
+        '201':
+          description: Query accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatentQueryResult'
+components:
+  schemas:
+    Health:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+    PatentQuery:
+      type: object
+      required:
+        - question
+      properties:
+        question:
+          type: string
+          minLength: 1
+    PatentQueryResult:
+      type: object
+      required:
+        - id
+        - answer
+      properties:
+        id:
+          type: string
+        answer:
+          type: string
