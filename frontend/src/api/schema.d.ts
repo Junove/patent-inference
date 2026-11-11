@@ -4,15 +4,15 @@
  */
 
 export interface paths {
-    "/health": {
+    "/api/v1/health": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Service health check */
-        get: operations["getHealth"];
+        /** Health */
+        get: operations["health_api_v1_health_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -21,7 +21,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/patents": {
+    "/api/v1/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Projects */
+        get: operations["list_projects_api_v1_projects_get"];
+        put?: never;
+        /** Create Project */
+        post: operations["create_project_api_v1_projects_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/patents/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Patents */
+        get: operations["search_patents_api_v1_patents_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/patents/{patent_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Patent */
+        get: operations["get_patent_api_v1_patents__patent_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/lint": {
         parameters: {
             query?: never;
             header?: never;
@@ -30,8 +82,128 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Submit a patent question */
-        post: operations["submitPatentQuery"];
+        /** Lint */
+        post: operations["lint_api_v1_lint_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Files */
+        get: operations["list_files_api_v1_projects__project_id__files_get"];
+        put?: never;
+        /** Upload File */
+        post: operations["upload_file_api_v1_projects__project_id__files_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/files/{file_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete File */
+        delete: operations["delete_file_api_v1_projects__project_id__files__file_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate */
+        post: operations["generate_api_v1_projects__project_id__generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job Events */
+        get: operations["job_events_api_v1_jobs__job_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Job */
+        post: operations["cancel_job_api_v1_jobs__job_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/sections/{name}/regenerate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regenerate Section */
+        post: operations["regenerate_section_api_v1_projects__project_id__sections__name__regenerate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/projects/{project_id}/documents/{version}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Document */
+        get: operations["download_document_api_v1_projects__project_id__documents__version__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -42,16 +214,163 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Health: {
-            /** @enum {string} */
-            status: "ok";
+        /** Body_lint_api_v1_lint_post */
+        Body_lint_api_v1_lint_post: {
+            /** File */
+            file: string;
         };
-        PatentQuery: {
-            question: string;
+        /** Body_upload_file_api_v1_projects__project_id__files_post */
+        Body_upload_file_api_v1_projects__project_id__files_post: {
+            /** File */
+            file: string;
         };
-        PatentQueryResult: {
+        /** Error */
+        Error: {
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
+        };
+        /** FileOut */
+        FileOut: {
+            /** Id */
             id: string;
-            answer: string;
+            /** Filename */
+            filename: string;
+            /** Content Type */
+            content_type: string;
+            /** Size */
+            size: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** Finding */
+        Finding: {
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "error" | "warning" | "info";
+            /** Rule */
+            rule: string;
+            /** Message */
+            message: string;
+            /** Location */
+            location?: string | null;
+        };
+        /** GenerateRequest */
+        GenerateRequest: {
+            /**
+             * Instructions
+             * @default
+             */
+            instructions: string;
+            /** Sections */
+            sections?: string[] | null;
+        };
+        /** Health */
+        Health: {
+            /**
+             * Status
+             * @constant
+             */
+            status: "ok";
+            /** Version */
+            version: string;
+        };
+        /** JobId */
+        JobId: {
+            /** Job Id */
+            job_id: string;
+        };
+        /** JobStatus */
+        JobStatus: {
+            /** Job Id */
+            job_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+        };
+        /** PatentDetail */
+        PatentDetail: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Abstract */
+            abstract: string;
+            /** Assignee */
+            assignee?: string | null;
+            /** Filing Date */
+            filing_date?: string | null;
+            /** Claims */
+            claims: string[];
+            /** Inventors */
+            inventors: string[];
+            /** Classification */
+            classification: string[];
+            /** Cited Patents */
+            cited_patents: components["schemas"]["PatentSummary"][];
+        };
+        /** PatentSummary */
+        PatentSummary: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            /** Abstract */
+            abstract: string;
+            /** Assignee */
+            assignee?: string | null;
+            /** Filing Date */
+            filing_date?: string | null;
+        };
+        /** ProjectCreate */
+        ProjectCreate: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+        };
+        /** ProjectOut */
+        ProjectOut: {
+            /** Name */
+            name: string;
+            /**
+             * Description
+             * @default
+             */
+            description: string;
+            /** Id */
+            id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** RegenerateRequest */
+        RegenerateRequest: {
+            /**
+             * Instructions
+             * @default
+             */
+            instructions: string;
+        };
+        /** SearchResults */
+        SearchResults: {
+            /** Results */
+            results: components["schemas"]["PatentSummary"][];
+            /** Total */
+            total: number;
         };
     };
     responses: never;
@@ -62,7 +381,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    getHealth: {
+    health_api_v1_health_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -71,7 +390,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Service is healthy */
+            /** @description Successful Response */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -80,9 +399,47 @@ export interface operations {
                     "application/json": components["schemas"]["Health"];
                 };
             };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
         };
     };
-    submitPatentQuery: {
+    list_projects_api_v1_projects_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectOut"][];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    create_project_api_v1_projects_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -91,17 +448,389 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["PatentQuery"];
+                "application/json": components["schemas"]["ProjectCreate"];
             };
         };
         responses: {
-            /** @description Query accepted */
+            /** @description Successful Response */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PatentQueryResult"];
+                    "application/json": components["schemas"]["ProjectOut"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    search_patents_api_v1_patents_search_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                page?: number;
+                date_from?: string | null;
+                date_to?: string | null;
+                assignee?: string | null;
+                inventor?: string | null;
+                classification?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResults"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    get_patent_api_v1_patents__patent_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                patent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PatentDetail"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    lint_api_v1_lint_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_lint_api_v1_lint_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Finding"][];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    list_files_api_v1_projects__project_id__files_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileOut"][];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    upload_file_api_v1_projects__project_id__files_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_file_api_v1_projects__project_id__files_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileOut"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    delete_file_api_v1_projects__project_id__files__file_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                file_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    generate_api_v1_projects__project_id__generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobId"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    job_events_api_v1_jobs__job_id__events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Server-sent events */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                    "text/event-stream": unknown;
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    cancel_job_api_v1_jobs__job_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatus"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    regenerate_section_api_v1_projects__project_id__sections__name__regenerate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobId"];
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    download_document_api_v1_projects__project_id__documents__version__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": unknown;
+                };
+            };
+            /** @description Default Response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };
