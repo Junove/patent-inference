@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -7,9 +7,10 @@ from app import schemas, uploads
 from app.config import get_settings
 from app.db import get_db
 from app.errors import ApiError
+from app.generator import runner
 from app.linter import engine as linter_engine
 from app.linter.parser import extract_lines
-from app.models import Project, ProjectFile
+from app.models import Document, Job, Project, ProjectFile
 from app.search.deps import get_patent_repository
 from app.search.repository import PatentRepository
 
@@ -17,15 +18,21 @@ VERSION = "0.1.0"
 router = APIRouter(prefix="/api/v1", responses={"default": {"model": schemas.Error}})
 
 
-def _todo(feature: str):
-    raise ApiError(501, "not_implemented", f"{feature} is not implemented yet")
-
-
 def _get_project(project_id: str, db: Session) -> Project:
     project = db.get(Project, project_id)
     if project is None:
         raise ApiError(404, "not_found", f"No project {project_id}")
     return project
+
+
+def _valid_sections(names: list[str] | None) -> list[str]:
+    order = runner.sections_order()
+    if names is None:
+        return order
+    unknown = [n for n in names if n not in order]
+    if unknown:
+        raise ApiError(400, "invalid_section", f"Unknown section(s): {', '.join(unknown)}")
+    return [n for n in order if n in names]
 
 
 @router.get("/health", response_model=schemas.Health)
@@ -101,28 +108,48 @@ def delete_file(project_id: str, file_id: str, db: Session = Depends(get_db)):
     uploads.delete(record, db)
 
 
-# --- contract stubs: implemented in later phases ---
 @router.post("/projects/{project_id}/generate", response_model=schemas.JobId, status_code=202)
-def generate(project_id: str, body: schemas.GenerateRequest):
-    _todo("Generation")
+async def generate(project_id: str, body: schemas.GenerateRequest, db: Session = Depends(get_db)):
+    _get_project(project_id, db)
+    sections = _valid_sections(body.sections)
+    job = runner.create_job(db, project_id, body.instructions, sections)
+    runner.start(job.id)
+    return {"job_id": job.id}
 
 
 @router.get("/jobs/{job_id}/events", responses={200: {"content": {"text/event-stream": {}}, "description": "Server-sent events"}})
-def job_events(job_id: str):
-    _todo("Job events")
+async def job_events(job_id: str, db: Session = Depends(get_db)):
+    if db.get(Job, job_id) is None:
+        raise ApiError(404, "not_found", f"No job {job_id}")
+    return StreamingResponse(runner.stream_events(job_id), media_type="text/event-stream")
 
 
 @router.post("/jobs/{job_id}/cancel", response_model=schemas.JobStatus)
-def cancel_job(job_id: str):
-    _todo("Job cancellation")
+async def cancel_job(job_id: str, db: Session = Depends(get_db)):
+    job = db.get(Job, job_id)
+    if job is None:
+        raise ApiError(404, "not_found", f"No job {job_id}")
+    if job.status in ("queued", "running"):
+        runner.cancel(job_id)
+        job.status = "cancelled"
+        db.commit()
+    return {"job_id": job.id, "status": job.status}
 
 
 @router.post("/projects/{project_id}/sections/{name}/regenerate", response_model=schemas.JobId, status_code=202)
-def regenerate_section(project_id: str, name: str, body: schemas.RegenerateRequest):
-    _todo("Section regeneration")
+async def regenerate_section(project_id: str, name: str, body: schemas.RegenerateRequest, db: Session = Depends(get_db)):
+    _get_project(project_id, db)
+    sections = _valid_sections([name])
+    job = runner.create_job(db, project_id, body.instructions, sections)
+    runner.start(job.id)
+    return {"job_id": job.id}
 
 
 @router.get("/projects/{project_id}/documents/{version}", response_class=FileResponse,
             responses={200: {"content": {"application/vnd.openxmlformats-officedocument.wordprocessingml.document": {}}}})
-def download_document(project_id: str, version: int):
-    _todo("Document download")
+def download_document(project_id: str, version: int, db: Session = Depends(get_db)):
+    doc = db.scalar(select(Document).where(Document.project_id == project_id, Document.version == version))
+    if doc is None:
+        raise ApiError(404, "not_found", f"No document version {version} for project {project_id}")
+    return FileResponse(doc.path, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                         filename=f"{project_id}-v{version}.docx")
