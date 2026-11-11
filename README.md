@@ -28,14 +28,29 @@ frontend is an npm-workspaces root with `frontend`, `packages/shared` and
 
 ## Setup
 
-Requirements: Python 3.11+ and Node 20+.
+Requirements: [uv](https://docs.astral.sh/uv/) (manages Python 3.11+ for the backend) and Node 20+.
 
 Backend (from `backend/`, once scaffolded):
 
 ```bash
-pip install -r requirements.txt
 cp ../.env.example .env   # add the Near AI Cloud key; never commit .env
-pytest
+uv run alembic upgrade head
+uv run pytest
+uv run uvicorn app.main:app --reload
+```
+
+`uv run` creates and updates `.venv` automatically from `pyproject.toml`/`uv.lock`; no manual venv activation needed.
+
+Seed the patent search database (dev-sized corpus; `--scale N` also adds N synthetic patents for perf testing):
+
+```bash
+uv run python -m app.search.seed
+```
+
+Run the patent search MCP server standalone:
+
+```bash
+uv run python -m app.search.mcp_server
 ```
 
 Frontend (from the repository root):
@@ -50,6 +65,7 @@ changing `contract/openapi.yaml` with `npm run generate:api`.
 
 CI runs `npm ci` followed by `npm test` from the repository root, and expects
 `backend/requirements.txt` to include pytest.
+CI expects these conventions: `backend/pyproject.toml` has a `dev` dependency group with pytest, and `frontend/package.json` has a `test` script that runs `vitest run`.
 
 ## Secrets
 
