@@ -196,7 +196,7 @@ The milestones are proposed relative to project start, assuming two people worki
 | Question | Decision | Applied in |
 | --- | --- | --- |
 | Does the linter target one jurisdiction's format (for example USPTO), or a generic structure? | USPTO. | FR-L2 |
-| Which Near AI Cloud models are available, and do they accept image input? | Use cheap DeepSeek models; the total budget is $20. Whether they accept images is still to confirm, since FR-G3 assumes vision. | NFR-12, FR-G3 |
+| Which Near AI Cloud models are available, and do they accept image input? | Confirmed via `cloud-api.near.ai/v1/models`: `deepseek/deepseek-v4.1-flash` is ready now, accepts text+image input, 1M context, $0.30/$1.20 per M tokens in/out. Used as the default model. | NFR-12, FR-G3 |
 | Is the linter's input always a .docx, or should it also accept PDF? | Also accept PDF. | FR-L1 |
 | Desktop packaging: browser tab, or a wrapped app? | Browser tab. | Overview assumptions, phase 5 |
 | Expected size of the real patent database? | 100,000 patents; design and test for that scale. | FR-S6, NFR-5, NFR-7 |
