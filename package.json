@@ -18,5 +18,9 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "generate:api": "npm run generate:api --workspace @near-private-ai/frontend"
+  },
+  "devDependencies": {
+    "jsdom": "^27.4.0",
+    "vitest": "^4.1.12"
   }
 }
