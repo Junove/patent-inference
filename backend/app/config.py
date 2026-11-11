@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     near_ai_model: str = ""
     database_url: str = "sqlite:///./patent.db"
     upload_dir: str = "./uploads"
+    upload_max_bytes: int = 25 * 1024 * 1024  # FR-U1 per-file limit
+    upload_retention_days: int = 30  # NFR-11
 
 
 @lru_cache

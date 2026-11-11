@@ -3,12 +3,13 @@ from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app import schemas
+from app import schemas, uploads
+from app.config import get_settings
 from app.db import get_db
 from app.errors import ApiError
 from app.linter import engine as linter_engine
 from app.linter.parser import extract_lines
-from app.models import Project
+from app.models import Project, ProjectFile
 from app.search.deps import get_patent_repository
 from app.search.repository import PatentRepository
 
@@ -18,6 +19,13 @@ router = APIRouter(prefix="/api/v1", responses={"default": {"model": schemas.Err
 
 def _todo(feature: str):
     raise ApiError(501, "not_implemented", f"{feature} is not implemented yet")
+
+
+def _get_project(project_id: str, db: Session) -> Project:
+    project = db.get(Project, project_id)
+    if project is None:
+        raise ApiError(404, "not_found", f"No project {project_id}")
+    return project
 
 
 @router.get("/health", response_model=schemas.Health)
@@ -65,22 +73,35 @@ async def lint(file: UploadFile):
     return linter_engine.lint(lines)
 
 
-# --- contract stubs: implemented in later phases ---
 @router.post("/projects/{project_id}/files", response_model=schemas.FileOut, status_code=201)
-def upload_file(project_id: str, file: UploadFile):
-    _todo("File upload")
+async def upload_file(project_id: str, file: UploadFile, db: Session = Depends(get_db)):
+    _get_project(project_id, db)
+    if not file.filename:
+        raise ApiError(400, "invalid_file", "File must have a filename")
+    data = await file.read()
+    limit = get_settings().upload_max_bytes
+    if len(data) > limit:
+        raise ApiError(413, "file_too_large", f"{file.filename} exceeds the {limit} byte limit")
+    return uploads.save(project_id, file.filename, file.content_type or "", data, db)
 
 
 @router.get("/projects/{project_id}/files", response_model=list[schemas.FileOut])
-def list_files(project_id: str):
-    _todo("File listing")
+def list_files(project_id: str, db: Session = Depends(get_db)):
+    _get_project(project_id, db)
+    return db.scalars(select(ProjectFile).where(ProjectFile.project_id == project_id)
+                       .order_by(ProjectFile.created_at)).all()
 
 
 @router.delete("/projects/{project_id}/files/{file_id}", status_code=204)
-def delete_file(project_id: str, file_id: str):
-    _todo("File deletion")
+def delete_file(project_id: str, file_id: str, db: Session = Depends(get_db)):
+    _get_project(project_id, db)
+    record = db.get(ProjectFile, file_id)
+    if record is None or record.project_id != project_id:
+        raise ApiError(404, "not_found", f"No file {file_id}")
+    uploads.delete(record, db)
 
 
+# --- contract stubs: implemented in later phases ---
 @router.post("/projects/{project_id}/generate", response_model=schemas.JobId, status_code=202)
 def generate(project_id: str, body: schemas.GenerateRequest):
     _todo("Generation")
